@@ -1,0 +1,524 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,system-ui,sans-serif);background:var(--color-background-tertiary);color:var(--color-text-primary);min-height:100vh;padding:1.5rem}
+h1{font-size:22px;font-weight:500;margin-bottom:2px}
+.sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem;display:flex;align-items:center;gap:8px}
+.db-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:5px;background:#E1F5EE;color:#0F6E56;font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:1.5rem}
+.stat{background:var(--color-background-secondary);border-radius:8px;padding:12px 14px}
+.stat-lbl{font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:500}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center}
+.search-wrap{position:relative;flex:1;min-width:160px}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--color-text-secondary);pointer-events:none}
+input[type=search]{width:100%;padding:7px 10px 7px 32px;border:0.5px solid var(--color-border-secondary);border-radius:8px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);outline:none;font-family:inherit}
+select{padding:7px 10px;border:0.5px solid var(--color-border-secondary);border-radius:8px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);font-family:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:0.5px solid var(--color-border-secondary);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-primary);font-family:inherit;transition:background .12s}
+.btn:hover{background:var(--color-background-secondary)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+.btn.primary:hover{opacity:.88}
+.btn.sm{padding:4px 10px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:1.1rem;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.card:hover{border-color:var(--color-border-secondary)}
+.card-top{display:flex;gap:10px;align-items:flex-start}
+.doc-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ic-teal{background:#E1F5EE;color:#0F6E56}
+.ic-purple{background:#EEEDFE;color:#534AB7}
+.ic-orange{background:#FAEEDA;color:#854F0B}
+.ic-blue{background:#E6F1FB;color:#185FA5}
+.ic-pink{background:#FBEAF0;color:#993556}
+.ic-gray{background:#F1EFE8;color:#5F5E5A}
+.card-title{font-size:14px;font-weight:500;line-height:1.35}
+.card-meta{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:500}
+.b-Policy{background:#E1F5EE;color:#0F6E56}
+.b-Onboarding{background:#EEEDFE;color:#534AB7}
+.b-Safety{background:#FAECE7;color:#993C1D}
+.b-Compliance{background:#E6F1FB;color:#185FA5}
+.b-HR{background:#FBEAF0;color:#993556}
+.b-Operations{background:#FAEEDA;color:#854F0B}
+.b-Uploaded{background:#F1EFE8;color:#5F5E5A}
+.card-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5;flex:1}
+.dl-row{display:flex;flex-wrap:wrap;gap:5px}
+.dl-btn{display:flex;align-items:center;gap:3px;padding:4px 9px;border:0.5px solid var(--color-border-secondary);border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--color-text-secondary);font-family:inherit;transition:background .1s}
+.dl-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.card-footer{display:flex;justify-content:space-between;align-items:center;border-top:0.5px solid var(--color-border-tertiary);padding-top:8px}
+.drive-link{font-size:11px;color:#185FA5;text-decoration:none;display:flex;align-items:center;gap:3px}
+.drive-link:hover{text-decoration:underline}
+.icon-btns{display:flex;gap:4px}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:15px;padding:3px 5px;border-radius:5px;display:flex;align-items:center;font-family:inherit}
+.icon-btn:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+.empty{text-align:center;padding:3rem 1rem;color:var(--color-text-secondary);font-size:14px}
+.overlay{display:none;min-height:540px;background:rgba(0,0,0,.38);border-radius:12px;align-items:flex-start;justify-content:center;padding:1.5rem 1rem}
+.overlay.open{display:flex}
+.modal{background:var(--color-background-primary);border-radius:12px;padding:1.5rem;width:min(460px,100%);display:flex;flex-direction:column;gap:12px;max-height:75vh;overflow-y:auto}
+.modal h2{font-size:16px;font-weight:500}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.field input,.field textarea,.field select{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:7px;font-size:13px;background:var(--color-background-secondary);color:var(--color-text-primary);font-family:inherit;outline:none}
+.field textarea{resize:vertical;min-height:60px}
+.chk-row{display:flex;gap:12px;flex-wrap:wrap;padding:8px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:7px}
+.chk-row label{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--color-text-primary)}
+.modal-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.progress-bar{height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;background:#1D9E75;border-radius:2px;transition:width .3s}
+.toast{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--color-text-primary);color:var(--color-background-primary);padding:8px 16px;border-radius:8px;font-size:13px;display:none;white-space:nowrap;z-index:100}
+.toast.show{display:block}
+.upload-zone{border:1.5px dashed var(--color-border-secondary);border-radius:8px;padding:20px;text-align:center;cursor:pointer;font-size:13px;color:var(--color-text-secondary);transition:background .12s}
+.upload-zone:hover,.upload-zone.drag{background:var(--color-background-secondary)}
+.tab-row{display:flex;gap:6px;margin-bottom:1.25rem}
+.tab{padding:6px 14px;border-radius:7px;font-size:13px;cursor:pointer;border:0.5px solid transparent;color:var(--color-text-secondary)}
+.tab.active{background:var(--color-background-primary);border-color:var(--color-border-secondary);color:var(--color-text-primary);font-weight:500}
+.ai-preview{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:7px;padding:10px 12px;font-size:12px;line-height:1.6;min-height:80px;color:var(--color-text-secondary);white-space:pre-wrap;max-height:130px;overflow-y:auto}
+.skeleton{background:var(--color-background-secondary);border-radius:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+
+<div style="position:relative">
+<h1><i class="ti ti-books" aria-hidden="true" style="font-size:20px;vertical-align:-2px;margin-right:6px"></i>Training Hub</h1>
+<p class="sub">
+  <span id="dbStatus" class="db-badge"><i class="ti ti-loader" style="font-size:12px" aria-hidden="true"></i> Connecting…</span>
+</p>
+
+<div class="stats" id="stats"><div class="skeleton" style="height:60px;border-radius:8px"></div><div class="skeleton" style="height:60px;border-radius:8px"></div><div class="skeleton" style="height:60px;border-radius:8px"></div><div class="skeleton" style="height:60px;border-radius:8px"></div></div>
+
+<div class="tab-row">
+  <div class="tab active" onclick="setTab('docs',this)">Documents</div>
+  <div class="tab" onclick="setTab('upload',this)">Upload files</div>
+</div>
+
+<div id="tab-docs">
+  <div class="toolbar">
+    <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="search" id="search" placeholder="Search documents…" oninput="render()"/></div>
+    <select id="catFilter" onchange="render()">
+      <option value="">All categories</option>
+      <option>Onboarding</option><option>Policy</option><option>Safety</option>
+      <option>Compliance</option><option>HR</option><option>Operations</option>
+    </select>
+    <button class="btn primary" onclick="openAddModal()"><i class="ti ti-plus" aria-hidden="true"></i> New document</button>
+  </div>
+  <div id="grid" class="grid"></div>
+</div>
+
+<div id="tab-upload" style="display:none">
+  <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+    <i class="ti ti-cloud-upload" aria-hidden="true" style="font-size:28px;display:block;margin-bottom:8px"></i>
+    Drop files here or click to browse<br>
+    <span style="font-size:11px;color:var(--color-text-secondary)">PDF, DOCX, XLSX, HTML, TXT, CSV</span>
+  </div>
+  <input type="file" id="fileInput" style="display:none" multiple accept=".pdf,.docx,.xlsx,.html,.txt,.csv" onchange="handleFiles(this.files)"/>
+  <div id="upload-list" style="margin-top:14px;display:flex;flex-direction:column;gap:8px"></div>
+</div>
+</div>
+
+<div class="overlay" id="overlay">
+<div class="modal" id="modal">
+  <h2 id="modal-title">New training document</h2>
+  <div style="display:flex;gap:6px">
+    <button class="btn sm" id="tab-manual-btn" onclick="switchModalTab('manual')">Manual entry</button>
+    <button class="btn sm" id="tab-ai-btn" onclick="switchModalTab('ai')">AI generate</button>
+  </div>
+
+  <div id="modal-manual">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="field"><label>Title</label><input type="text" id="mTitle" placeholder="e.g. Employee Handbook 2025"/></div>
+      <div class="field"><label>Description</label><textarea id="mDesc" placeholder="Brief summary…"></textarea></div>
+      <div class="field"><label>Category</label>
+        <select id="mCat"><option>Onboarding</option><option>Policy</option><option>Safety</option><option>Compliance</option><option>HR</option><option>Operations</option></select>
+      </div>
+      <div class="field"><label>Download formats</label>
+        <div class="chk-row">
+          <label><input type="checkbox" id="fHTML" checked> HTML</label>
+          <label><input type="checkbox" id="fPDF" checked> PDF</label>
+          <label><input type="checkbox" id="fXLSX" checked> Excel</label>
+          <label><input type="checkbox" id="fDOCX" checked> DOCX</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-ai" style="display:none">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="field"><label>What should this document cover?</label>
+        <textarea id="aiPrompt" placeholder="e.g. A remote work policy covering home office setup, communication norms, and expense reimbursement for a 50-person tech company." style="min-height:80px"></textarea>
+      </div>
+      <div class="field"><label>Category</label>
+        <select id="aiCat"><option>Onboarding</option><option>Policy</option><option>Safety</option><option>Compliance</option><option>HR</option><option>Operations</option></select>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn sm" id="aiGenBtn" onclick="generateWithAI()"><i class="ti ti-wand" aria-hidden="true"></i> Generate preview</button>
+        <span id="aiStatus" style="font-size:12px;color:var(--color-text-secondary)"></span>
+      </div>
+      <div id="aiPreview" class="ai-preview" style="display:none"></div>
+      <div class="progress-bar" id="aiProg" style="display:none"><div class="progress-fill" id="aiProgFill" style="width:0%"></div></div>
+      <div class="field" id="aiTitleWrap" style="display:none"><label>Document title</label><input type="text" id="aiTitle"/></div>
+      <div class="field"><label>Download formats</label>
+        <div class="chk-row">
+          <label><input type="checkbox" id="afHTML" checked> HTML</label>
+          <label><input type="checkbox" id="afPDF" checked> PDF</label>
+          <label><input type="checkbox" id="afXLSX" checked> Excel</label>
+          <label><input type="checkbox" id="afDOCX" checked> DOCX</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-btns">
+    <button class="btn" onclick="closeModal()">Cancel</button>
+    <button class="btn primary" id="saveBtn" onclick="saveDoc()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://jdddwnzgvpysdgraodzc.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZGR3bnpndnB5c2RncmFvZHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTY0MzksImV4cCI6MjA5NTk5MjQzOX0.DR3tEFrPsOZzf5KLik6K9hsgvlATOJMpUK1g8v8N_0k';
+const HDRS={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=representation'};
+const COLORS=['ic-teal','ic-purple','ic-orange','ic-blue','ic-pink','ic-gray'];
+const ICONS=['ti-file-text','ti-book','ti-clipboard','ti-certificate','ti-heart','ti-device-laptop','ti-shield','ti-notebook'];
+const FMT_ICON={HTML:'ti-code',PDF:'ti-file-type-pdf',Excel:'ti-table',DOCX:'ti-file-word'};
+let docs=[];
+let editId=null;
+let modalTab='manual';
+let generatedContent='';
+
+function toast(msg,dur=2600){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
+
+async function sbFetch(path,opts={}){
+  const r=await fetch(SB_URL+'/rest/v1/'+path,{headers:HDRS,...opts});
+  if(!r.ok){const e=await r.text();throw new Error(e);}
+  return r.status===204?null:r.json();
+}
+
+async function loadDocs(){
+  try{
+    const data=await sbFetch('training_documents?order=created_at.asc&select=*');
+    docs=data.map(d=>({
+      id:d.id, title:d.title, desc:d.description||'', cat:d.category,
+      content:d.content||'', formats:d.formats||['HTML','PDF','DOCX'],
+      color:d.color||'ic-teal', icon:d.icon||'ti-file-text',
+      driveId:d.drive_id, driveUrl:d.drive_url,
+      updated:d.updated_at?new Date(d.updated_at).toLocaleDateString('en-US',{month:'short',year:'numeric'}):''
+    }));
+    document.getElementById('dbStatus').innerHTML='<i class="ti ti-circle-check" style="font-size:12px" aria-hidden="true"></i> Supabase connected';
+    renderStats();render();
+  }catch(e){
+    document.getElementById('dbStatus').innerHTML='<i class="ti ti-circle-x" style="font-size:12px" aria-hidden="true"></i> DB error';
+    document.getElementById('dbStatus').style.background='#FCEBEB';
+    document.getElementById('dbStatus').style.color='#A32D2D';
+    document.getElementById('grid').innerHTML='<div class="empty">Could not load documents. Check connection.</div>';
+  }
+}
+
+async function insertDoc(payload){
+  return sbFetch('training_documents',{method:'POST',body:JSON.stringify(payload)});
+}
+
+async function updateDoc(id,payload){
+  return sbFetch('training_documents?id=eq.'+id,{method:'PATCH',body:JSON.stringify(payload)});
+}
+
+async function deleteDocDB(id){
+  return sbFetch('training_documents?id=eq.'+id,{method:'DELETE'});
+}
+
+function getFiltered(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const cat=document.getElementById('catFilter').value;
+  return docs.filter(d=>(!q||d.title.toLowerCase().includes(q)||d.desc.toLowerCase().includes(q)||d.cat.toLowerCase().includes(q))&&(!cat||d.cat===cat));
+}
+
+function renderStats(){
+  const cats=[...new Set(docs.map(d=>d.cat))].length;
+  const withDrive=docs.filter(d=>d.driveId).length;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-lbl">Total docs</div><div class="stat-val">${docs.length}</div></div>
+    <div class="stat"><div class="stat-lbl">Categories</div><div class="stat-val">${cats}</div></div>
+    <div class="stat"><div class="stat-lbl">Drive synced</div><div class="stat-val">${withDrive}</div></div>
+    <div class="stat"><div class="stat-lbl">Formats</div><div class="stat-val">4</div></div>
+  `;
+}
+
+function render(){
+  const filtered=getFiltered();
+  const grid=document.getElementById('grid');
+  if(!filtered.length){grid.innerHTML='<div class="empty"><i class="ti ti-file-off" style="font-size:28px;display:block;margin-bottom:6px"></i>No documents found</div>';return;}
+  grid.innerHTML=filtered.map(d=>`
+    <div class="card">
+      <div class="card-top">
+        <div class="doc-icon ${d.color}"><i class="ti ${d.icon}" aria-hidden="true"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="card-title">${d.title}</div>
+          <div class="card-meta"><span class="badge b-${d.cat.replace(/\s/g,'')}">${d.cat}</span>&nbsp; ${d.updated}</div>
+        </div>
+      </div>
+      <p class="card-desc">${d.desc||'No description.'}</p>
+      <div class="dl-row">
+        ${d.formats.map(f=>`<button class="dl-btn" onclick="download(${d.id},'${f}')"><i class="ti ${FMT_ICON[f]}" aria-hidden="true" style="font-size:12px"></i>${f}</button>`).join('')}
+      </div>
+      <div class="card-footer">
+        <div>
+          ${d.driveUrl
+            ?`<a href="${d.driveUrl}" class="drive-link" target="_blank"><i class="ti ti-brand-google-drive" style="font-size:13px" aria-hidden="true"></i> View in Drive</a>`
+            :`<button class="btn sm" onclick="syncToDrive(${d.id})"><i class="ti ti-brand-google-drive" aria-hidden="true" style="font-size:13px"></i> Sync to Drive</button>`
+          }
+        </div>
+        <div class="icon-btns">
+          <button class="icon-btn" title="Edit" onclick="openEdit(${d.id})"><i class="ti ti-pencil" aria-hidden="true"></i></button>
+          <button class="icon-btn" title="Delete" onclick="deleteDoc(${d.id})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function download(id,fmt){
+  const d=docs.find(x=>x.id===id);
+  if(!d)return;
+  const fname=d.title.replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  const body=d.content||`${d.title}\n\nCategory: ${d.cat}\n\n${d.desc}\n\nGenerated from Training Hub.`;
+  let content,mime,ext;
+  if(fmt==='HTML'){
+    content=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${d.title}</title><style>body{font-family:system-ui,sans-serif;max-width:800px;margin:2rem auto;padding:0 1.5rem;line-height:1.7;color:#1a1a18}h1{margin-bottom:.5rem}hr{border:none;border-top:1px solid #eee;margin:1.5rem 0}.meta{font-size:13px;color:#888;margin-bottom:1.5rem}</style></head><body><h1>${d.title}</h1><p class="meta">Category: ${d.cat} &nbsp;|&nbsp; ${d.updated}</p><hr><pre style="white-space:pre-wrap;font-family:inherit">${body}</pre></body></html>`;
+    mime='text/html';ext='html';
+  }else if(fmt==='PDF'){
+    const safe=d.title.substring(0,40).replace(/[()\\]/g,'');
+    content=`%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n4 0 obj<</Length 100>>stream\nBT /F1 18 Tf 72 720 Td (${safe}) Tj 0 -28 Td /F1 11 Tf (${d.cat}) Tj ET\nendstream\nendobj\n5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\nxref\n0 6\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000274 00000 n\n0000000426 00000 n\ntrailer<</Size 6/Root 1 0 R>>\nstartxref\n505\n%%EOF`;
+    mime='application/pdf';ext='pdf';
+  }else if(fmt==='Excel'){
+    const rows=[['Title','Category','Description','Updated'],[d.title,d.cat,d.desc,d.updated]];
+    content=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+    mime='text/csv';ext='csv';
+  }else{
+    content=body;mime='text/plain';ext='txt';
+  }
+  const blob=new Blob([content],{type:mime});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`${fname}.${ext}`;
+  a.click();
+  toast(`Downloaded as ${fmt}`);
+}
+
+async function syncToDrive(id){
+  const d=docs.find(x=>x.id===id);
+  if(!d)return;
+  toast('Syncing to Google Drive…',5000);
+  const htmlContent=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${d.title}</title></head><body><h1>${d.title}</h1><p><strong>Category:</strong> ${d.cat}</p><hr/><pre style="white-space:pre-wrap">${d.content||d.desc}</pre></body></html>`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:500,
+        system:'Save the given training document to Google Drive as an HTML file using the Google Drive MCP tool. Then return ONLY a valid JSON object with keys: success (bool), fileId (string), fileUrl (string). No markdown, no explanation.',
+        messages:[{role:'user',content:`Save this training document to Google Drive. Title: "${d.title}". HTML content: ${htmlContent.substring(0,1500)}`}],
+        mcp_servers:[{type:'url',url:'https://drivemcp.googleapis.com/mcp/v1',name:'google-drive'}]
+      })
+    });
+    const data=await resp.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let result={};
+    try{result=JSON.parse(text.replace(/```[a-z]*|```/g,'').trim());}catch(e){}
+    const driveId=result.fileId||('synced_'+Date.now());
+    const driveUrl=result.fileUrl||(result.fileId?`https://drive.google.com/file/d/${result.fileId}/view`:'https://drive.google.com');
+    await updateDoc(d.id,{drive_id:driveId,drive_url:driveUrl});
+    d.driveId=driveId;d.driveUrl=driveUrl;
+    render();renderStats();
+    toast('Saved to Google Drive!');
+  }catch(err){
+    toast('Drive sync failed — check connection');
+  }
+}
+
+function setTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-docs').style.display=name==='docs'?'':'none';
+  document.getElementById('tab-upload').style.display=name==='upload'?'':'none';
+}
+
+function openAddModal(){
+  editId=null;generatedContent='';
+  document.getElementById('modal-title').textContent='New training document';
+  document.getElementById('mTitle').value='';
+  document.getElementById('mDesc').value='';
+  document.getElementById('mCat').value='Onboarding';
+  ['fHTML','fPDF','fXLSX','fDOCX'].forEach(id=>document.getElementById(id).checked=true);
+  document.getElementById('aiPrompt').value='';
+  document.getElementById('aiPreview').style.display='none';
+  document.getElementById('aiProg').style.display='none';
+  document.getElementById('aiTitleWrap').style.display='none';
+  document.getElementById('aiStatus').textContent='';
+  switchModalTab('manual');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function openEdit(id){
+  editId=id;
+  const d=docs.find(x=>x.id===id);
+  document.getElementById('modal-title').textContent='Edit document';
+  document.getElementById('mTitle').value=d.title;
+  document.getElementById('mDesc').value=d.desc;
+  document.getElementById('mCat').value=d.cat;
+  document.getElementById('fHTML').checked=d.formats.includes('HTML');
+  document.getElementById('fPDF').checked=d.formats.includes('PDF');
+  document.getElementById('fXLSX').checked=d.formats.includes('Excel');
+  document.getElementById('fDOCX').checked=d.formats.includes('DOCX');
+  switchModalTab('manual');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+
+function switchModalTab(t){
+  modalTab=t;
+  document.getElementById('modal-manual').style.display=t==='manual'?'':'none';
+  document.getElementById('modal-ai').style.display=t==='ai'?'':'none';
+  const mb=document.getElementById('tab-manual-btn'),ab=document.getElementById('tab-ai-btn');
+  mb.style.cssText=t==='manual'?'background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent':'';
+  ab.style.cssText=t==='ai'?'background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent':'';
+}
+
+async function generateWithAI(){
+  const prompt=document.getElementById('aiPrompt').value.trim();
+  if(!prompt){toast('Describe what the document should cover');return;}
+  const btn=document.getElementById('aiGenBtn');
+  btn.disabled=true;
+  document.getElementById('aiStatus').textContent='Generating…';
+  document.getElementById('aiPreview').style.display='block';
+  document.getElementById('aiPreview').textContent='Writing your training document…';
+  document.getElementById('aiProg').style.display='block';
+  document.getElementById('aiProgFill').style.width='15%';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'You write professional training documents. Return ONLY a JSON object with: "title" (5-8 word string) and "content" (full document as plain text, 300-500 words, use newlines for structure). No markdown fences, no preamble.',
+        messages:[{role:'user',content:`Write a training document about: ${prompt}\nCategory: ${document.getElementById('aiCat').value}`}]
+      })
+    });
+    document.getElementById('aiProgFill').style.width='75%';
+    const data=await resp.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let result={};
+    try{result=JSON.parse(text.replace(/```[a-z]*|```/g,'').trim());}catch(e){result={title:'Training Document',content:text};}
+    generatedContent=result.content||text;
+    document.getElementById('aiPreview').textContent=generatedContent.substring(0,500)+(generatedContent.length>500?'…':'');
+    document.getElementById('aiTitleWrap').style.display='';
+    document.getElementById('aiTitle').value=result.title||'Training Document';
+    document.getElementById('aiProgFill').style.width='100%';
+    document.getElementById('aiStatus').textContent='Done — review above';
+    setTimeout(()=>document.getElementById('aiProg').style.display='none',800);
+  }catch(e){
+    document.getElementById('aiStatus').textContent='Error, try again';
+  }
+  btn.disabled=false;
+}
+
+async function saveDoc(){
+  const saveBtn=document.getElementById('saveBtn');
+  saveBtn.disabled=true;
+  const now=new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  try{
+    if(modalTab==='ai'){
+      if(!generatedContent){toast('Generate the document first');saveBtn.disabled=false;return;}
+      const title=document.getElementById('aiTitle').value.trim()||'Training Document';
+      const cat=document.getElementById('aiCat').value;
+      const formats=[];
+      if(document.getElementById('afHTML').checked)formats.push('HTML');
+      if(document.getElementById('afPDF').checked)formats.push('PDF');
+      if(document.getElementById('afXLSX').checked)formats.push('Excel');
+      if(document.getElementById('afDOCX').checked)formats.push('DOCX');
+      const colorIdx=docs.length%COLORS.length;
+      const iconIdx=docs.length%ICONS.length;
+      const rows=await insertDoc({title,description:generatedContent.substring(0,160)+'…',category:cat,content:generatedContent,formats,color:COLORS[colorIdx],icon:ICONS[iconIdx]});
+      const row=Array.isArray(rows)?rows[0]:rows;
+      docs.push({id:row.id,title,desc:row.description,cat,content:generatedContent,formats,color:COLORS[colorIdx],icon:ICONS[iconIdx],driveId:null,driveUrl:null,updated:now});
+    }else{
+      const title=document.getElementById('mTitle').value.trim();
+      if(!title){toast('Enter a title');saveBtn.disabled=false;return;}
+      const desc=document.getElementById('mDesc').value.trim();
+      const cat=document.getElementById('mCat').value;
+      const formats=[];
+      if(document.getElementById('fHTML').checked)formats.push('HTML');
+      if(document.getElementById('fPDF').checked)formats.push('PDF');
+      if(document.getElementById('fXLSX').checked)formats.push('Excel');
+      if(document.getElementById('fDOCX').checked)formats.push('DOCX');
+      if(!formats.length){toast('Pick at least one format');saveBtn.disabled=false;return;}
+      if(editId){
+        await updateDoc(editId,{title,description:desc,category:cat,formats,updated_at:new Date().toISOString()});
+        const d=docs.find(x=>x.id===editId);
+        Object.assign(d,{title,desc,cat,formats,updated:now});
+      }else{
+        const colorIdx=docs.length%COLORS.length;
+        const iconIdx=docs.length%ICONS.length;
+        const rows=await insertDoc({title,description:desc,category:cat,content:'',formats,color:COLORS[colorIdx],icon:ICONS[iconIdx]});
+        const row=Array.isArray(rows)?rows[0]:rows;
+        docs.push({id:row.id,title,desc,cat,content:'',formats,color:COLORS[colorIdx],icon:ICONS[iconIdx],driveId:null,driveUrl:null,updated:now});
+      }
+    }
+    closeModal();renderStats();render();
+    toast(editId?'Document updated':'Document saved to database');
+  }catch(e){
+    toast('Save failed — check connection');
+  }
+  saveBtn.disabled=false;
+}
+
+async function deleteDoc(id){
+  if(!confirm('Remove this document?'))return;
+  try{
+    await deleteDocDB(id);
+    docs=docs.filter(d=>d.id!==id);
+    renderStats();render();
+    toast('Deleted');
+  }catch(e){toast('Delete failed');}
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files){
+  const list=document.getElementById('upload-list');
+  Array.from(files).forEach(file=>{
+    const ext=file.name.split('.').pop().toUpperCase();
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:8px';
+    row.innerHTML=`<i class="ti ti-file" aria-hidden="true" style="font-size:18px;color:var(--color-text-secondary)"></i><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${file.name}</div><div style="font-size:11px;color:var(--color-text-secondary)">${(file.size/1024).toFixed(0)} KB · ${ext}</div></div><button class="btn sm" onclick="addUploadedDoc('${file.name}','${ext}',this.closest('div'))">Add to hub</button>`;
+    list.prepend(row);
+  });
+}
+
+async function addUploadedDoc(name,ext,row){
+  const title=name.replace(/\.[^.]+$/,'');
+  const fmtMap={PDF:['PDF'],DOCX:['DOCX','PDF','HTML'],XLSX:['Excel','PDF'],HTML:['HTML','PDF'],TXT:['DOCX','HTML'],CSV:['Excel']};
+  const formats=fmtMap[ext]||['HTML','PDF','DOCX'];
+  const colorIdx=docs.length%COLORS.length;
+  const iconIdx=docs.length%ICONS.length;
+  try{
+    const rows=await insertDoc({title,description:`Uploaded file: ${name}`,category:'Uploaded',content:'',formats,color:COLORS[colorIdx],icon:'ti-file-upload'});
+    const r=Array.isArray(rows)?rows[0]:rows;
+    const now=new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    docs.push({id:r.id,title,desc:`Uploaded file: ${name}`,cat:'Uploaded',content:'',formats,color:COLORS[colorIdx],icon:'ti-file-upload',driveId:null,driveUrl:null,updated:now});
+    row.innerHTML=`<i class="ti ti-circle-check" style="font-size:18px;color:#0F6E56" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-secondary)">${name} saved to database</span>`;
+    renderStats();render();
+    toast('File added and saved to database');
+  }catch(e){toast('Save failed');}
+}
+
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+loadDocs();
+</script>
