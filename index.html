@@ -1,0 +1,748 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020811;--bg2:#040f1e;--bg3:#061525;
+  --cyan:#00f5ff;--cyan2:#00b4cc;--cyan3:#003d47;
+  --magenta:#ff00ff;--mag2:#cc00cc;
+  --green:#00ff88;--green2:#00cc6a;
+  --amber:#ffb700;--red:#ff2244;
+  --border:#0a3a4a;--border2:#0d5068;
+  --text:#8ecfdf;--text2:#4a8a99;--text3:#1e4a55;
+  --card:#030d18;--card2:#061828;
+}
+body{font-family:'Share Tech Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;padding:0;overflow-x:hidden}
+
+.scanline{pointer-events:none;position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,255,.015) 2px,rgba(0,245,255,.015) 4px);z-index:0}
+
+.hud-top{position:relative;z-index:10;background:var(--bg2);border-bottom:1px solid var(--border2);padding:0}
+.hud-bar{display:flex;align-items:stretch;height:48px}
+.hud-logo{display:flex;align-items:center;gap:10px;padding:0 16px;border-right:1px solid var(--border2);min-width:0}
+.logo-hex{width:28px;height:28px;position:relative;flex-shrink:0}
+.logo-hex svg{width:100%;height:100%}
+.logo-text{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:.12em;line-height:1.2;white-space:nowrap}
+.logo-sub{font-size:8px;color:var(--text2);letter-spacing:.15em}
+.hud-tabs{display:flex;align-items:stretch;flex:1}
+.hud-tab{display:flex;align-items:center;gap:6px;padding:0 16px;font-size:11px;cursor:pointer;color:var(--text2);letter-spacing:.08em;border-right:1px solid var(--border);border-bottom:2px solid transparent;transition:all .15s;font-family:'Share Tech Mono',monospace}
+.hud-tab:hover{color:var(--cyan);background:rgba(0,245,255,.03)}
+.hud-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,245,255,.05)}
+.hud-right{display:flex;align-items:center;gap:12px;padding:0 14px;border-left:1px solid var(--border2);margin-left:auto}
+.sys-stat{font-size:9px;color:var(--text2);letter-spacing:.08em;text-align:right;line-height:1.6}
+.sys-stat span{color:var(--cyan)}
+.ping{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+.ping.amber{background:var(--amber)}
+.ping.mag{background:var(--magenta)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.subbar{background:var(--bg);border-bottom:1px solid var(--border);padding:4px 16px;display:flex;gap:16px;align-items:center;position:relative;z-index:9}
+.subbar-item{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--text3);letter-spacing:.1em}
+.subbar-item.on{color:var(--green2)}
+.subbar-item.warn{color:var(--amber)}
+
+.hero{position:relative;background:var(--bg2);border-bottom:1px solid var(--border2);padding:14px 16px;overflow:hidden;z-index:5}
+.hero-grid{position:absolute;inset:0;opacity:.08;background-image:linear-gradient(var(--cyan3) 1px,transparent 1px),linear-gradient(90deg,var(--cyan3) 1px,transparent 1px);background-size:24px 24px}
+.hero-inner{position:relative;z-index:2;display:flex;align-items:center;gap:16px}
+.hero-art{flex-shrink:0}
+.hero-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--cyan);letter-spacing:.1em;line-height:1.1;margin-bottom:4px}
+.hero-sub{font-size:10px;color:var(--text2);letter-spacing:.12em;line-height:1.8}
+.hero-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.hbadge{font-size:9px;padding:2px 8px;border:1px solid;letter-spacing:.1em;font-family:'Share Tech Mono',monospace}
+.hbadge-cyan{border-color:var(--cyan2);color:var(--cyan);background:rgba(0,245,255,.05)}
+.hbadge-green{border-color:var(--green2);color:var(--green);background:rgba(0,255,136,.05)}
+.hbadge-mag{border-color:var(--mag2);color:var(--magenta);background:rgba(255,0,255,.05)}
+
+.main{padding:14px 16px;position:relative;z-index:5}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px}
+.stat-cell{background:var(--card);border:1px solid var(--border2);padding:10px 12px;position:relative;overflow:hidden}
+.stat-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cyan)}
+.stat-cell.mag::before{background:var(--magenta)}
+.stat-cell.grn::before{background:var(--green)}
+.stat-cell.amb::before{background:var(--amber)}
+.stat-lbl{font-size:9px;color:var(--text2);letter-spacing:.15em;text-transform:uppercase;margin-bottom:5px}
+.stat-num{font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--cyan);line-height:1}
+.stat-cell.mag .stat-num{color:var(--magenta)}
+.stat-cell.grn .stat-num{color:var(--green)}
+.stat-cell.amb .stat-num{color:var(--amber)}
+.stat-sub{font-size:9px;color:var(--text3);margin-top:3px}
+
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.cyber-search{position:relative;flex:1;min-width:160px}
+.cyber-search i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text2);pointer-events:none}
+.cyber-input{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:7px 10px 7px 32px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;letter-spacing:.04em}
+.cyber-input:focus{border-color:var(--cyan);color:var(--cyan)}
+.cyber-select{background:var(--card);border:1px solid var(--border2);color:var(--text);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;cursor:pointer;letter-spacing:.04em}
+.cyber-select:focus{border-color:var(--cyan)}
+
+.cbtn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid var(--border2);background:transparent;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:.06em;transition:all .12s;white-space:nowrap}
+.cbtn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,.04)}
+.cbtn.primary{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,.06)}
+.cbtn.primary:hover{background:rgba(0,245,255,.12)}
+.cbtn.sm{padding:3px 9px;font-size:10px}
+.cbtn.danger{border-color:var(--red);color:var(--red)}
+.cbtn.danger:hover{background:rgba(255,34,68,.08)}
+.cbtn:disabled{opacity:.35;cursor:not-allowed}
+
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:10px}
+
+.doc-card{background:var(--card);border:1px solid var(--border2);padding:14px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;transition:border-color .15s,background .15s;cursor:default}
+.doc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cyan)}
+.doc-card.cat-policy::before{background:var(--magenta)}
+.doc-card.cat-safety::before{background:var(--red)}
+.doc-card.cat-compliance::before{background:var(--green)}
+.doc-card.cat-hr::before{background:var(--amber)}
+.doc-card.cat-operations::before{background:#aa88ff}
+.doc-card.cat-onboarding::before{background:var(--cyan)}
+.doc-card.cat-uploaded::before{background:var(--text2)}
+.doc-card:hover{border-color:var(--cyan2);background:var(--card2)}
+.doc-card.cat-policy:hover{border-color:var(--mag2)}
+.doc-card.cat-safety:hover{border-color:var(--red)}
+.doc-card.cat-compliance:hover{border-color:var(--green2)}
+.doc-card.cat-hr:hover{border-color:var(--amber)}
+.doc-card.cat-operations:hover{border-color:#aa88ff}
+
+.card-corner{position:absolute;width:12px;height:12px;border-color:var(--cyan2);border-style:solid;opacity:.6}
+.card-corner.tl{top:4px;left:4px;border-width:1px 0 0 1px}
+.card-corner.tr{top:4px;right:4px;border-width:1px 1px 0 0}
+.card-corner.bl{bottom:4px;left:4px;border-width:0 0 1px 1px}
+.card-corner.br{bottom:4px;right:4px;border-width:0 1px 1px 0}
+
+.card-head{display:flex;gap:10px;align-items:flex-start}
+.card-icon-wrap{width:38px;height:38px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:var(--cyan);position:relative}
+.card-icon-wrap.pol{color:var(--magenta);border-color:#3d003d}
+.card-icon-wrap.saf{color:var(--red);border-color:#3d0010}
+.card-icon-wrap.com{color:var(--green);border-color:#003d20}
+.card-icon-wrap.hr{color:var(--amber);border-color:#3d2d00}
+.card-icon-wrap.ops{color:#aa88ff;border-color:#2a1a55}
+.card-icon-wrap.onb{color:var(--cyan);border-color:var(--border2)}
+.card-icon-wrap.upl{color:var(--text2);border-color:var(--border)}
+
+.card-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;color:#d0eaf5;letter-spacing:.04em;line-height:1.3}
+.card-meta{font-size:9px;color:var(--text2);margin-top:3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ctag{font-size:9px;padding:1px 6px;letter-spacing:.1em;font-weight:500;border:1px solid}
+.ctag-onboarding{border-color:var(--cyan2);color:var(--cyan)}
+.ctag-policy{border-color:var(--mag2);color:var(--magenta)}
+.ctag-safety{border-color:var(--red);color:var(--red)}
+.ctag-compliance{border-color:var(--green2);color:var(--green)}
+.ctag-hr{border-color:var(--amber);color:var(--amber)}
+.ctag-operations{border-color:#aa88ff;color:#aa88ff}
+.ctag-uploaded{border-color:var(--text2);color:var(--text2)}
+
+.card-desc{font-size:11px;color:var(--text2);line-height:1.55;flex:1;font-family:'Rajdhani',sans-serif;font-weight:400}
+
+.dl-row{display:flex;flex-wrap:wrap;gap:5px}
+.dl-btn{display:flex;align-items:center;gap:3px;padding:4px 9px;border:1px solid var(--border2);font-size:10px;cursor:pointer;background:transparent;color:var(--text2);font-family:'Share Tech Mono',monospace;letter-spacing:.06em;transition:all .12s}
+.dl-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,.05)}
+.dl-btn.pdf:hover{border-color:var(--red);color:var(--red)}
+.dl-btn.xl:hover{border-color:var(--green);color:var(--green)}
+.dl-btn.doc:hover{border-color:var(--magenta);color:var(--magenta)}
+
+.card-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:9px;margin-top:2px}
+.drive-link{font-size:10px;color:var(--cyan2);text-decoration:none;display:flex;align-items:center;gap:4px;letter-spacing:.06em;transition:color .12s}
+.drive-link:hover{color:var(--cyan)}
+.icon-btns{display:flex;gap:2px}
+.icon-btn{background:none;border:1px solid transparent;cursor:pointer;color:var(--text2);font-size:14px;padding:3px 5px;display:flex;align-items:center;transition:all .12s}
+.icon-btn:hover{color:var(--cyan);border-color:var(--border2)}
+.icon-btn.del:hover{color:var(--red);border-color:var(--red)}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:12px;border:1px solid var(--border);letter-spacing:.08em}
+
+.upload-zone{border:1px dashed var(--border2);padding:28px;text-align:center;cursor:pointer;font-size:12px;color:var(--text2);transition:all .15s;letter-spacing:.06em;position:relative;overflow:hidden}
+.upload-zone::before{content:'';position:absolute;inset:0;background:var(--bg2);opacity:0;transition:opacity .15s}
+.upload-zone:hover::before,.upload-zone.drag::before{opacity:1}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--cyan);color:var(--cyan)}
+.upload-zone>*{position:relative;z-index:1}
+
+.overlay{display:none;min-height:600px;background:rgba(0,0,0,.85);align-items:flex-start;justify-content:center;padding:2rem 1rem;z-index:50}
+.overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);width:min(500px,100%);display:flex;flex-direction:column;max-height:82vh;overflow-y:auto;position:relative}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.modal-hdr{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border2)}
+.modal-hdr h2{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:.12em}
+.modal-tabs{display:flex;border-bottom:1px solid var(--border)}
+.mtab{padding:8px 16px;font-size:10px;cursor:pointer;color:var(--text2);letter-spacing:.1em;border-bottom:2px solid transparent;background:none;border-left:none;border-right:none;border-top:none;font-family:'Share Tech Mono',monospace;transition:all .12s}
+.mtab:hover{color:var(--cyan)}
+.mtab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.modal-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+.cfield{display:flex;flex-direction:column;gap:4px}
+.cfield label{font-size:9px;color:var(--text2);letter-spacing:.15em;text-transform:uppercase}
+.cfield input,.cfield textarea,.cfield select{background:var(--bg);border:1px solid var(--border2);border-bottom:2px solid var(--cyan3);color:var(--text);padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;width:100%;transition:border-color .12s}
+.cfield input:focus,.cfield textarea:focus,.cfield select:focus{border-bottom-color:var(--cyan);color:var(--cyan)}
+.cfield textarea{resize:vertical;min-height:64px}
+.chk-row{display:flex;gap:14px;flex-wrap:wrap;padding:8px 10px;background:var(--bg);border:1px solid var(--border)}
+.chk-row label{display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;color:var(--text);font-family:'Share Tech Mono',monospace;letter-spacing:.04em}
+.modal-ftr{background:var(--bg);border-top:1px solid var(--border);padding:10px 16px;display:flex;justify-content:flex-end;gap:8px}
+.ai-out{background:var(--bg);border:1px solid var(--border);border-left:2px solid var(--cyan2);padding:10px 12px;font-size:11px;line-height:1.65;min-height:80px;color:var(--text2);white-space:pre-wrap;max-height:140px;overflow-y:auto;font-family:'Share Tech Mono',monospace}
+.prog-bar{height:2px;background:var(--border);overflow:hidden;margin-top:4px}
+.prog-fill{height:100%;background:var(--cyan);transition:width .35s}
+
+.toast{position:absolute;bottom:14px;right:14px;background:var(--bg2);border:1px solid var(--cyan2);border-left:3px solid var(--cyan);color:var(--cyan);padding:8px 14px;font-size:10px;display:none;font-family:'Share Tech Mono',monospace;letter-spacing:.06em;z-index:999;max-width:320px}
+.toast.err{border-color:var(--red);border-left-color:var(--red);color:var(--red)}
+.toast.show{display:block}
+
+.upload-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border:1px solid var(--border);font-family:'Share Tech Mono',monospace}
+</style>
+
+<div style="position:relative;background:var(--bg);min-height:100vh">
+<div class="scanline"></div>
+
+<div class="hud-top">
+  <div class="hud-bar">
+    <div class="hud-logo">
+      <svg class="logo-hex" viewBox="0 0 28 28" fill="none">
+        <polygon points="14,2 24,8 24,20 14,26 4,20 4,8" fill="none" stroke="#00f5ff" stroke-width="1.2"/>
+        <polygon points="14,6 21,10 21,18 14,22 7,18 7,10" fill="rgba(0,245,255,0.06)" stroke="#00b4cc" stroke-width="0.8"/>
+        <text x="14" y="17" text-anchor="middle" fill="#00f5ff" font-family="monospace" font-size="7" font-weight="bold">TH</text>
+      </svg>
+      <div>
+        <div class="logo-text">TRAINING HUB</div>
+        <div class="logo-sub">NEURAL DOC SYSTEM v3.0</div>
+      </div>
+    </div>
+    <div class="hud-tabs">
+      <div class="hud-tab active" onclick="setTab('docs',this)" id="htab-docs"><i class="ti ti-database" aria-hidden="true" style="font-size:13px"></i>DOCUMENT MATRIX</div>
+      <div class="hud-tab" onclick="setTab('upload',this)" id="htab-upload"><i class="ti ti-upload" aria-hidden="true" style="font-size:13px"></i>UPLOAD DATASTREAM</div>
+    </div>
+    <div class="hud-right">
+      <div class="ping" id="dbPing"></div>
+      <div class="sys-stat">
+        <div>NODE: <span id="nodeStatus">CONNECTING</span></div>
+        <div id="clockLine">CYCLE: <span>--:--:--</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="subbar">
+  <div class="subbar-item on"><div class="ping"></div>SUPABASE: ONLINE</div>
+  <div class="subbar-item" id="subDbStatus"><div class="ping amber"></div>LOADING...</div>
+  <div class="subbar-item on"><div class="ping"></div>AI ENGINE: READY</div>
+  <div class="subbar-item on"><div class="ping mag"></div>GDRIVE MCP: ACTIVE</div>
+  <div class="subbar-item warn"><div class="ping amber"></div>ENCRYPTION: AES-256</div>
+</div>
+
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-art">
+      <svg width="90" height="90" viewBox="0 0 90 90" fill="none">
+        <polygon points="45,5 80,25 80,65 45,85 10,65 10,25" fill="none" stroke="#00f5ff" stroke-width="1"/>
+        <polygon points="45,14 72,30 72,60 45,76 18,60 18,30" fill="rgba(0,245,255,.04)" stroke="#00b4cc" stroke-width=".8"/>
+        <circle cx="45" cy="45" r="14" fill="none" stroke="#00f5ff" stroke-width="1" stroke-dasharray="4 2"/>
+        <circle cx="45" cy="45" r="6" fill="rgba(0,245,255,.2)" stroke="#00f5ff" stroke-width="1"/>
+        <line x1="45" y1="14" x2="45" y2="31" stroke="#00f5ff" stroke-width=".8" opacity=".5"/>
+        <line x1="45" y1="59" x2="45" y2="76" stroke="#00f5ff" stroke-width=".8" opacity=".5"/>
+        <line x1="18" y1="30" x2="31" y2="37" stroke="#00f5ff" stroke-width=".8" opacity=".5"/>
+        <line x1="59" y1="53" x2="72" y2="60" stroke="#00f5ff" stroke-width=".8" opacity=".5"/>
+        <line x1="72" y1="30" x2="59" y2="37" stroke="#00f5ff" stroke-width=".8" opacity=".5"/>
+        <line x1="18" y1="60" x2="31" y2="53" stroke="#00f5ff" stroke-width=".8" opacity=".5"/>
+        <circle cx="45" cy="14" r="2.5" fill="#00f5ff"/>
+        <circle cx="45" cy="76" r="2.5" fill="#00f5ff"/>
+        <circle cx="18" cy="30" r="2.5" fill="#00f5ff"/>
+        <circle cx="72" cy="30" r="2.5" fill="#00f5ff"/>
+        <circle cx="18" cy="60" r="2.5" fill="#00f5ff"/>
+        <circle cx="72" cy="60" r="2.5" fill="#00f5ff"/>
+        <text x="45" y="48" text-anchor="middle" fill="#00f5ff" font-family="monospace" font-size="5" font-weight="bold">DOC</text>
+        <text x="45" y="54" text-anchor="middle" fill="#00b4cc" font-family="monospace" font-size="4">MATRIX</text>
+      </svg>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="hero-title">TRAINING DOCUMENT MATRIX</div>
+      <div class="hero-sub">
+        NEURAL-LINKED KNOWLEDGE REPOSITORY &nbsp;//&nbsp; SUPABASE PERSISTENCE LAYER<br>
+        AI-GENERATED CONTENT &nbsp;·&nbsp; MULTI-FORMAT OUTPUT &nbsp;·&nbsp; GDRIVE OFFSITE SYNC
+      </div>
+      <div class="hero-badges">
+        <span class="hbadge hbadge-cyan"><i class="ti ti-database" style="font-size:9px;vertical-align:middle;margin-right:3px" aria-hidden="true"></i>LIVE DB</span>
+        <span class="hbadge hbadge-green"><i class="ti ti-wand" style="font-size:9px;vertical-align:middle;margin-right:3px" aria-hidden="true"></i>AI GENERATE</span>
+        <span class="hbadge hbadge-mag"><i class="ti ti-brand-google-drive" style="font-size:9px;vertical-align:middle;margin-right:3px" aria-hidden="true"></i>DRIVE SYNC</span>
+      </div>
+    </div>
+    <div style="flex-shrink:0;text-align:right">
+      <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;line-height:2">
+        <div>SECTOR: <span style="color:var(--cyan)">ALPHA-7</span></div>
+        <div>PROTOCOL: <span style="color:var(--cyan)">NEURAL-LINK</span></div>
+        <div>BUILD: <span style="color:var(--cyan)">3.0.1</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="stats-grid" id="stats"></div>
+
+  <div id="tab-docs">
+    <div class="toolbar">
+      <div class="cyber-search">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input class="cyber-input" type="search" id="search" placeholder="SEARCH KNOWLEDGE BASE..." oninput="renderDocs()"/>
+      </div>
+      <select class="cyber-select" id="catFilter" onchange="renderDocs()">
+        <option value="">ALL SECTORS</option>
+        <option>Onboarding</option><option>Policy</option><option>Safety</option>
+        <option>Compliance</option><option>HR</option><option>Operations</option>
+      </select>
+      <button class="cbtn primary" onclick="openAddModal()"><i class="ti ti-plus" aria-hidden="true"></i>NEW DOCUMENT</button>
+    </div>
+    <div id="grid" class="doc-grid"></div>
+  </div>
+
+  <div id="tab-upload" style="display:none">
+    <div class="upload-zone" id="dropZone"
+      onclick="document.getElementById('fileInput').click()"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="handleDrop(event)">
+      <i class="ti ti-cloud-upload" aria-hidden="true" style="font-size:32px;display:block;margin-bottom:10px"></i>
+      DROP FILES INTO THE DATASTREAM OR CLICK TO INITIATE UPLOAD<br>
+      <span style="font-size:10px;letter-spacing:.08em;margin-top:4px;display:block">ACCEPTED: PDF · DOCX · XLSX · HTML · TXT · CSV</span>
+    </div>
+    <input type="file" id="fileInput" style="display:none" multiple accept=".pdf,.docx,.xlsx,.html,.txt,.csv" onchange="handleFiles(this.files)"/>
+    <div id="upload-list" style="margin-top:10px;display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+<div class="modal">
+  <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)"></div>
+  <div class="modal-hdr">
+    <h2 id="modal-title">INITIALIZE NEW DOCUMENT</h2>
+    <button class="icon-btn" onclick="closeModal()" style="color:var(--text2)"><i class="ti ti-x" aria-hidden="true"></i></button>
+  </div>
+  <div class="modal-tabs">
+    <button class="mtab active" id="mtab-manual" onclick="switchModalTab('manual')">MANUAL ENTRY</button>
+    <button class="mtab" id="mtab-ai" onclick="switchModalTab('ai')">AI GENERATE</button>
+  </div>
+  <div class="modal-body">
+    <div id="modal-manual">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="cfield"><label>DOCUMENT TITLE</label><input type="text" id="mTitle" placeholder="Enter document name..."/></div>
+        <div class="cfield"><label>DESCRIPTION</label><textarea id="mDesc" placeholder="Brief description of this document..."></textarea></div>
+        <div class="cfield"><label>SECTOR / CATEGORY</label>
+          <select id="mCat"><option>Onboarding</option><option>Policy</option><option>Safety</option><option>Compliance</option><option>HR</option><option>Operations</option></select>
+        </div>
+        <div class="cfield"><label>OUTPUT FORMATS</label>
+          <div class="chk-row">
+            <label><input type="checkbox" id="fHTML" checked> HTML</label>
+            <label><input type="checkbox" id="fPDF" checked> PDF</label>
+            <label><input type="checkbox" id="fXLSX" checked> EXCEL</label>
+            <label><input type="checkbox" id="fDOCX" checked> DOCX</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="modal-ai" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="cfield"><label>DOCUMENT SPECIFICATION</label>
+          <textarea id="aiPrompt" style="min-height:80px" placeholder="Describe what this training document should cover... e.g. Remote work policy covering home office setup, communication norms, and expense reimbursement."></textarea>
+        </div>
+        <div class="cfield"><label>SECTOR</label>
+          <select id="aiCat"><option>Onboarding</option><option>Policy</option><option>Safety</option><option>Compliance</option><option>HR</option><option>Operations</option></select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="cbtn sm primary" id="aiGenBtn" onclick="generateWithAI()"><i class="ti ti-wand" aria-hidden="true"></i>GENERATE</button>
+          <span id="aiStatus" style="font-size:10px;color:var(--amber);letter-spacing:.06em"></span>
+        </div>
+        <div id="aiPreview" class="ai-out" style="display:none"></div>
+        <div class="prog-bar" id="aiProg" style="display:none"><div class="prog-fill" id="aiProgFill" style="width:0%"></div></div>
+        <div class="cfield" id="aiTitleWrap" style="display:none"><label>DOCUMENT TITLE</label><input type="text" id="aiTitle"/></div>
+        <div class="cfield"><label>OUTPUT FORMATS</label>
+          <div class="chk-row">
+            <label><input type="checkbox" id="afHTML" checked> HTML</label>
+            <label><input type="checkbox" id="afPDF" checked> PDF</label>
+            <label><input type="checkbox" id="afXLSX" checked> EXCEL</label>
+            <label><input type="checkbox" id="afDOCX" checked> DOCX</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-ftr">
+    <button class="cbtn" onclick="closeModal()">ABORT</button>
+    <button class="cbtn primary" id="saveBtn" onclick="saveDoc()"><i class="ti ti-device-floppy" aria-hidden="true"></i>COMMIT</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://jdddwnzgvpysdgraodzc.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZGR3bnpndnB5c2RncmFvZHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTY0MzksImV4cCI6MjA5NTk5MjQzOX0.DR3tEFrPsOZzf5KLik6K9hsgvlATOJMpUK1g8v8N_0k';
+const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=representation'};
+const FMT_ICON={HTML:'ti-code',PDF:'ti-file-type-pdf',Excel:'ti-table',DOCX:'ti-file-word'};
+const FMT_CLS={HTML:'',PDF:'pdf',Excel:'xl',DOCX:'doc'};
+const CAT_ICON_MAP={Onboarding:'ti-users',Policy:'ti-clipboard-list',Safety:'ti-shield-check',Compliance:'ti-certificate',HR:'ti-heart',Operations:'ti-settings',Uploaded:'ti-file-upload'};
+const CAT_WRAP={Onboarding:'onb',Policy:'pol',Safety:'saf',Compliance:'com',HR:'hr',Operations:'ops',Uploaded:'upl'};
+const CAT_CARD={Onboarding:'cat-onboarding',Policy:'cat-policy',Safety:'cat-safety',Compliance:'cat-compliance',HR:'cat-hr',Operations:'cat-operations',Uploaded:'cat-uploaded'};
+const CAT_TAG={Onboarding:'ctag-onboarding',Policy:'ctag-policy',Safety:'ctag-safety',Compliance:'ctag-compliance',HR:'ctag-hr',Operations:'ctag-operations',Uploaded:'ctag-uploaded'};
+
+let docs=[];
+let editId=null;
+let modalTab='manual';
+let generatedContent='';
+
+function tick(){
+  const n=new Date();
+  const t=[n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  const el=document.getElementById('clockLine');
+  if(el)el.innerHTML='CYCLE: <span>'+t+'</span>';
+}
+setInterval(tick,1000);tick();
+
+function toast(msg,isErr=false,dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent='>> '+msg;
+  t.className='toast'+(isErr?' err':'')+' show';
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+async function sbFetch(path,opts={}){
+  const r=await fetch(SB_URL+'/rest/v1/'+path,{headers:H,...opts});
+  if(!r.ok)throw new Error(await r.text());
+  return r.status===204?null:r.json();
+}
+
+async function loadDocs(){
+  try{
+    const data=await sbFetch('training_documents?order=created_at.asc&select=*');
+    docs=data.map(d=>({
+      id:d.id,title:d.title,desc:d.description||'',cat:d.category||'Onboarding',
+      content:d.content||'',formats:Array.isArray(d.formats)?d.formats:['HTML','PDF','DOCX'],
+      driveId:d.drive_id,driveUrl:d.drive_url,
+      updated:d.updated_at?new Date(d.updated_at).toLocaleDateString('en-US',{month:'short',year:'numeric'}):''
+    }));
+    document.getElementById('nodeStatus').textContent='ONLINE';
+    document.getElementById('dbPing').className='ping';
+    const s=document.getElementById('subDbStatus');
+    s.className='subbar-item on';
+    s.innerHTML='<div class="ping"></div>RECORDS: '+docs.length+' LOADED';
+    renderStats();renderDocs();
+  }catch(e){
+    document.getElementById('nodeStatus').textContent='ERROR';
+    document.getElementById('dbPing').className='ping amber';
+    const s=document.getElementById('subDbStatus');
+    s.className='subbar-item';
+    s.innerHTML='<div class="ping" style="background:var(--red)"></div>DB OFFLINE';
+    document.getElementById('grid').innerHTML='<div class="empty-state">CONNECTION FAILED — CHECK SUPABASE CREDENTIALS</div>';
+    toast('DATABASE CONNECTION FAILED',true);
+  }
+}
+
+async function insertDoc(p){return sbFetch('training_documents',{method:'POST',body:JSON.stringify(p)});}
+async function patchDoc(id,p){return sbFetch('training_documents?id=eq.'+id,{method:'PATCH',body:JSON.stringify(p)});}
+async function deleteDocDB(id){return sbFetch('training_documents?id=eq.'+id,{method:'DELETE'});}
+
+function getFiltered(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const cat=document.getElementById('catFilter').value;
+  return docs.filter(d=>
+    (!q||d.title.toLowerCase().includes(q)||d.desc.toLowerCase().includes(q)||(d.cat||'').toLowerCase().includes(q))
+    &&(!cat||d.cat===cat)
+  );
+}
+
+function renderStats(){
+  const cats=new Set(docs.map(d=>d.cat)).size;
+  const synced=docs.filter(d=>d.driveId).length;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat-cell"><div class="stat-lbl">TOTAL DOCS</div><div class="stat-num">${docs.length}</div><div class="stat-sub">IN MATRIX</div></div>
+    <div class="stat-cell mag"><div class="stat-lbl">SECTORS</div><div class="stat-num">${cats}</div><div class="stat-sub">CATEGORIES</div></div>
+    <div class="stat-cell grn"><div class="stat-lbl">DRIVE SYNC</div><div class="stat-num">${synced}</div><div class="stat-sub">OFFSITE BACKUP</div></div>
+    <div class="stat-cell amb"><div class="stat-lbl">FORMATS</div><div class="stat-num">4</div><div class="stat-sub">OUTPUT TYPES</div></div>
+  `;
+}
+
+function renderDocs(){
+  const filtered=getFiltered();
+  const grid=document.getElementById('grid');
+  if(!filtered.length){
+    grid.innerHTML='<div class="empty-state"><i class="ti ti-radar-2" style="font-size:28px;display:block;margin-bottom:8px"></i>NO RECORDS FOUND IN THIS SECTOR</div>';
+    return;
+  }
+  grid.innerHTML=filtered.map(d=>{
+    const cat=d.cat||'Onboarding';
+    const wc=CAT_WRAP[cat]||'onb';
+    const cc=CAT_CARD[cat]||'cat-onboarding';
+    const tc=CAT_TAG[cat]||'ctag-onboarding';
+    const ic=CAT_ICON_MAP[cat]||'ti-file-text';
+    return `<div class="doc-card ${cc}">
+      <div class="card-corner tl"></div><div class="card-corner tr"></div>
+      <div class="card-corner bl"></div><div class="card-corner br"></div>
+      <div class="card-head">
+        <div class="card-icon-wrap ${wc}"><i class="ti ${ic}" aria-hidden="true"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="card-title">${escHtml(d.title)}</div>
+          <div class="card-meta">
+            <span class="ctag ${tc}">${cat.toUpperCase()}</span>
+            <span>${d.updated||''}</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">${escHtml(d.desc||'No description on file.')}</p>
+      <div class="dl-row">
+        ${(d.formats||[]).map(f=>`<button class="dl-btn ${FMT_CLS[f]||''}" onclick="dlDoc(${d.id},'${f}')"><i class="ti ${FMT_ICON[f]||'ti-file'}" aria-hidden="true" style="font-size:11px"></i>${f}</button>`).join('')}
+      </div>
+      <div class="card-footer">
+        <div>
+          ${d.driveUrl
+            ?`<a href="${escAttr(d.driveUrl)}" class="drive-link" target="_blank" rel="noopener"><i class="ti ti-brand-google-drive" style="font-size:12px" aria-hidden="true"></i>VIEW IN DRIVE</a>`
+            :`<button class="cbtn sm" onclick="syncDrive(${d.id})"><i class="ti ti-brand-google-drive" aria-hidden="true"></i>SYNC DRIVE</button>`
+          }
+        </div>
+        <div class="icon-btns">
+          <button class="icon-btn" title="Edit document" onclick="openEdit(${d.id})"><i class="ti ti-pencil" aria-hidden="true"></i></button>
+          <button class="icon-btn del" title="Delete document" onclick="delDoc(${d.id})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escAttr(s){return String(s).replace(/"/g,'&quot;');}
+
+function dlDoc(id,fmt){
+  const d=docs.find(x=>x.id===id);
+  if(!d){toast('DOCUMENT NOT FOUND',true);return;}
+  const safe=s=>String(s||'').replace(/[<>&"]/g,'');
+  const fname=(d.title||'document').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  const body=d.content||`${d.title}\n\nCategory: ${d.cat}\n\n${d.desc}\n\nGenerated by Training Hub.`;
+  let content,mime,ext;
+  if(fmt==='HTML'){
+    content=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safe(d.title)}</title><style>@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap');*{box-sizing:border-box}body{font-family:'Rajdhani',sans-serif;background:#020811;color:#8ecfdf;max-width:900px;margin:0 auto;padding:2rem 1.5rem;line-height:1.7}h1{font-family:'Share Tech Mono',monospace;color:#00f5ff;border-bottom:1px solid #0a3a4a;padding-bottom:.75rem;margin-bottom:1rem;font-size:1.4rem}pre{white-space:pre-wrap;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.8;color:#4a8a99}.meta{font-size:11px;color:#1e4a55;margin-bottom:1.5rem;font-family:'Share Tech Mono',monospace;letter-spacing:.06em}</style></head><body><h1>${safe(d.title)}</h1><p class="meta">SECTOR: ${safe(d.cat)} &nbsp;|&nbsp; ${safe(d.updated)} &nbsp;|&nbsp; TRAINING HUB v3.0</p><pre>${safe(body)}</pre></body></html>`;
+    mime='text/html';ext='html';
+  }else if(fmt==='PDF'){
+    const t=safe(d.title).substring(0,50);
+    const c=safe(d.cat);
+    content=`%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Contents 4 0 R/Resources<</Font<</F1 5 0 R/F2 6 0 R>>>>>>endobj\n4 0 obj<</Length 200>>stream\nBT\n/F1 16 Tf\n50 750 Td\n(${t}) Tj\n0 -24 Td\n/F2 10 Tf\n(Category: ${c}) Tj\n0 -16 Td\n(Generated by Training Hub) Tj\nET\nendstream\nendobj\n5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold>>endobj\n6 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\nxref\n0 7\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000296 00000 n\n0000000554 00000 n\n0000000623 00000 n\ntrailer<</Size 7/Root 1 0 R>>\nstartxref\n695\n%%EOF`;
+    mime='application/pdf';ext='pdf';
+  }else if(fmt==='Excel'){
+    const rows=[['Title','Category','Description','Updated'],[d.title,d.cat,d.desc,d.updated]];
+    if(d.content){rows.push(['Content','','','']);rows.push([d.content.substring(0,500),'','','']);}
+    content=rows.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+    mime='text/csv';ext='csv';
+  }else{
+    content=`TRAINING HUB — DOCUMENT EXPORT\n${'='.repeat(50)}\nTITLE: ${d.title}\nCATEGORY: ${d.cat}\nUPDATED: ${d.updated}\n${'='.repeat(50)}\n\n${body}`;
+    mime='text/plain';ext='txt';
+  }
+  try{
+    const blob=new Blob([content],{type:mime});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`${fname}.${ext}`;
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},200);
+    toast(`${d.title.substring(0,24)} → ${fmt} DOWNLOADED`);
+  }catch(e){toast('DOWNLOAD FAILED: '+e.message,true);}
+}
+
+async function syncDrive(id){
+  const d=docs.find(x=>x.id===id);
+  if(!d){toast('DOCUMENT NOT FOUND',true);return;}
+  toast('INITIATING GDRIVE SYNC...',false,6000);
+  const html=`<!DOCTYPE html><html><head><title>${d.title}</title></head><body><h1>${d.title}</h1><p>${d.cat} | ${d.updated}</p><pre>${d.content||d.desc}</pre></body></html>`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:600,
+        system:'Save a training document to Google Drive as an HTML file using the Google Drive MCP. Return ONLY valid JSON: {"success":true,"fileId":"...","fileUrl":"..."} — no markdown, no explanation.',
+        messages:[{role:'user',content:`Save to Google Drive. Title: "${d.title}". Content: ${html.substring(0,1800)}`}],
+        mcp_servers:[{type:'url',url:'https://drivemcp.googleapis.com/mcp/v1',name:'google-drive'}]
+      })
+    });
+    const data=await resp.json();
+    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let res={};
+    try{res=JSON.parse(txt.replace(/```[a-z]*\n?|```/g,'').trim());}catch(e){}
+    const driveId=res.fileId||('synced_'+Date.now());
+    const driveUrl=res.fileUrl||(res.fileId?`https://drive.google.com/file/d/${res.fileId}/view`:'https://drive.google.com');
+    await patchDoc(d.id,{drive_id:driveId,drive_url:driveUrl});
+    d.driveId=driveId;d.driveUrl=driveUrl;
+    renderStats();renderDocs();
+    toast('DRIVE SYNC COMPLETE — FILE SAVED');
+  }catch(e){toast('DRIVE SYNC FAILED: '+e.message,true);}
+}
+
+function setTab(name,el){
+  document.querySelectorAll('.hud-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-docs').style.display=name==='docs'?'':'none';
+  document.getElementById('tab-upload').style.display=name==='upload'?'':'none';
+}
+
+function openAddModal(){
+  editId=null;generatedContent='';
+  document.getElementById('modal-title').textContent='INITIALIZE NEW DOCUMENT';
+  document.getElementById('mTitle').value='';
+  document.getElementById('mDesc').value='';
+  document.getElementById('mCat').value='Onboarding';
+  ['fHTML','fPDF','fXLSX','fDOCX','afHTML','afPDF','afXLSX','afDOCX'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=true;});
+  document.getElementById('aiPrompt').value='';
+  document.getElementById('aiPreview').style.display='none';
+  document.getElementById('aiProg').style.display='none';
+  document.getElementById('aiTitleWrap').style.display='none';
+  document.getElementById('aiStatus').textContent='';
+  switchModalTab('manual');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function openEdit(id){
+  const d=docs.find(x=>x.id===id);
+  if(!d){toast('RECORD NOT FOUND',true);return;}
+  editId=id;
+  document.getElementById('modal-title').textContent='EDIT DOCUMENT RECORD';
+  document.getElementById('mTitle').value=d.title||'';
+  document.getElementById('mDesc').value=d.desc||'';
+  document.getElementById('mCat').value=d.cat||'Onboarding';
+  document.getElementById('fHTML').checked=(d.formats||[]).includes('HTML');
+  document.getElementById('fPDF').checked=(d.formats||[]).includes('PDF');
+  document.getElementById('fXLSX').checked=(d.formats||[]).includes('Excel');
+  document.getElementById('fDOCX').checked=(d.formats||[]).includes('DOCX');
+  switchModalTab('manual');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+
+function switchModalTab(t){
+  modalTab=t;
+  document.getElementById('modal-manual').style.display=t==='manual'?'':'none';
+  document.getElementById('modal-ai').style.display=t==='ai'?'':'none';
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mtab-'+t).classList.add('active');
+}
+
+async function generateWithAI(){
+  const prompt=(document.getElementById('aiPrompt').value||'').trim();
+  if(!prompt){toast('ENTER DOCUMENT SPECIFICATION',true);return;}
+  const btn=document.getElementById('aiGenBtn');
+  btn.disabled=true;
+  document.getElementById('aiStatus').textContent='PROCESSING...';
+  document.getElementById('aiPreview').style.display='block';
+  document.getElementById('aiPreview').textContent='NEURAL ENGINE GENERATING CONTENT...\nPLEASE WAIT...';
+  document.getElementById('aiProg').style.display='block';
+  document.getElementById('aiProgFill').style.width='10%';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:'Write professional training documents. Return ONLY a JSON object with keys "title" (5-8 words) and "content" (300-500 words plain text, use newlines for structure). No markdown code fences, no preamble — raw JSON only.',
+        messages:[{role:'user',content:`Write a training document about: ${prompt}\nCategory: ${document.getElementById('aiCat').value}`}]
+      })
+    });
+    document.getElementById('aiProgFill').style.width='70%';
+    const data=await resp.json();
+    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let result={};
+    try{result=JSON.parse(txt.replace(/```[a-z]*\n?|```/g,'').trim());}catch(e){result={title:'Training Document',content:txt};}
+    generatedContent=result.content||txt;
+    document.getElementById('aiPreview').textContent=generatedContent.substring(0,520)+(generatedContent.length>520?'\n\n[...TRUNCATED — FULL CONTENT SAVED]':'');
+    document.getElementById('aiTitleWrap').style.display='';
+    document.getElementById('aiTitle').value=result.title||'Training Document';
+    document.getElementById('aiProgFill').style.width='100%';
+    document.getElementById('aiStatus').textContent='GENERATION COMPLETE — RC:0000';
+    setTimeout(()=>document.getElementById('aiProg').style.display='none',900);
+    toast('AI DOCUMENT GENERATED SUCCESSFULLY');
+  }catch(e){
+    document.getElementById('aiStatus').textContent='GENERATION FAILED';
+    toast('AI GENERATION FAILED: '+e.message,true);
+  }
+  btn.disabled=false;
+}
+
+async function saveDoc(){
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;
+  const now=new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  try{
+    if(modalTab==='ai'){
+      if(!generatedContent){toast('RUN GENERATE FIRST',true);btn.disabled=false;return;}
+      const title=(document.getElementById('aiTitle').value||'').trim()||'Training Document';
+      const cat=document.getElementById('aiCat').value||'Onboarding';
+      const formats=['afHTML','afPDF','afXLSX','afDOCX'].map((id,i)=>document.getElementById(id)?.checked?['HTML','PDF','Excel','DOCX'][i]:null).filter(Boolean);
+      const rows=await insertDoc({title,description:generatedContent.substring(0,200)+'…',category:cat,content:generatedContent,formats:formats.length?formats:['HTML','PDF'],color:'ic-blue',icon:CAT_ICON_MAP[cat]||'ti-file-text'});
+      const row=Array.isArray(rows)?rows[0]:rows;
+      docs.push({id:row.id,title,desc:row.description,cat,content:generatedContent,formats:formats.length?formats:['HTML','PDF'],driveId:null,driveUrl:null,updated:now});
+    }else{
+      const title=(document.getElementById('mTitle').value||'').trim();
+      if(!title){toast('TITLE REQUIRED',true);btn.disabled=false;return;}
+      const desc=(document.getElementById('mDesc').value||'').trim();
+      const cat=document.getElementById('mCat').value||'Onboarding';
+      const formats=['fHTML','fPDF','fXLSX','fDOCX'].map((id,i)=>document.getElementById(id)?.checked?['HTML','PDF','Excel','DOCX'][i]:null).filter(Boolean);
+      if(!formats.length){toast('SELECT AT LEAST ONE FORMAT',true);btn.disabled=false;return;}
+      if(editId){
+        await patchDoc(editId,{title,description:desc,category:cat,formats,updated_at:new Date().toISOString()});
+        const d=docs.find(x=>x.id===editId);
+        if(d)Object.assign(d,{title,desc,cat,formats,updated:now});
+      }else{
+        const rows=await insertDoc({title,description:desc,category:cat,content:'',formats,color:'ic-blue',icon:CAT_ICON_MAP[cat]||'ti-file-text'});
+        const row=Array.isArray(rows)?rows[0]:rows;
+        docs.push({id:row.id,title,desc,cat,content:'',formats,driveId:null,driveUrl:null,updated:now});
+      }
+    }
+    closeModal();renderStats();renderDocs();
+    toast(editId?'DOCUMENT UPDATED':'DOCUMENT COMMITTED TO DATABASE');
+  }catch(e){toast('COMMIT FAILED: '+e.message,true);}
+  btn.disabled=false;
+}
+
+async function delDoc(id){
+  if(!confirm('PURGE DOCUMENT FROM MATRIX — CONFIRM?'))return;
+  try{
+    await deleteDocDB(id);
+    docs=docs.filter(d=>d.id!==id);
+    renderStats();renderDocs();
+    toast('DOCUMENT PURGED FROM MATRIX');
+  }catch(e){toast('PURGE FAILED: '+e.message,true);}
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files){
+  const list=document.getElementById('upload-list');
+  Array.from(files).forEach(file=>{
+    const ext=(file.name.split('.').pop()||'').toUpperCase();
+    const fmtMap={PDF:['PDF'],DOCX:['DOCX','PDF','HTML'],XLSX:['Excel','PDF'],HTML:['HTML','PDF'],TXT:['DOCX','HTML'],CSV:['Excel']};
+    const formats=fmtMap[ext]||['HTML','PDF','DOCX'];
+    const row=document.createElement('div');
+    row.className='upload-item';
+    const safeName=file.name.replace(/'/g,"\\'");
+    row.innerHTML=`
+      <i class="ti ti-file" aria-hidden="true" style="font-size:16px;color:var(--text2);flex-shrink:0"></i>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cyan)">${file.name}</div>
+        <div style="font-size:10px;color:var(--text3)">${(file.size/1024).toFixed(1)} KB &nbsp;·&nbsp; TYPE: ${ext}</div>
+      </div>
+      <button class="cbtn sm primary" onclick="addUploaded('${safeName}','${ext}',this.closest('.upload-item'))">UPLOAD</button>
+    `;
+    list.prepend(row);
+  });
+}
+
+async function addUploaded(name,ext,row){
+  const title=name.replace(/\.[^.]+$/,'');
+  const fmtMap={PDF:['PDF'],DOCX:['DOCX','PDF','HTML'],XLSX:['Excel','PDF'],HTML:['HTML','PDF'],TXT:['DOCX','HTML'],CSV:['Excel']};
+  const formats=fmtMap[ext]||['HTML','PDF','DOCX'];
+  try{
+    const rows=await insertDoc({title,description:'Uploaded file: '+name,category:'Uploaded',content:'',formats,color:'ic-gray',icon:'ti-file-upload'});
+    const r=Array.isArray(rows)?rows[0]:rows;
+    const now=new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    docs.push({id:r.id,title,desc:'Uploaded file: '+name,cat:'Uploaded',content:'',formats,driveId:null,driveUrl:null,updated:now});
+    row.innerHTML=`<i class="ti ti-circle-check" style="font-size:16px;color:var(--green)" aria-hidden="true"></i><span style="font-size:11px;color:var(--text2);margin-left:8px">${name} — CATALOGED IN MATRIX</span>`;
+    renderStats();renderDocs();
+    toast(name.substring(0,28)+' UPLOADED AND CATALOGED');
+  }catch(e){toast('UPLOAD FAILED: '+e.message,true);}
+}
+
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+loadDocs();
+</script>
